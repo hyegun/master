@@ -196,23 +196,127 @@
         font-size: 12.5px;
         color: #475569;
         font-weight: 500;
+        position: relative;
+        cursor: pointer;
+        padding: 6px 8px;
+        border-radius: 8px;
+        transition: background 0.15s;
       }
-      .topbar-user i {
+      .topbar-user:hover {
+        background: #f1f5f9;
+      }
+      .topbar-user i.ti-chevron-down {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-left: 1px;
+        transition: transform 0.15s;
+      }
+      .topbar-user.open i.ti-chevron-down {
+        transform: rotate(180deg);
+      }
+      .topbar-user i.ti-user-circle {
         font-size: 16px;
         color: #0c447c;
       }
-      .btn-logout {
+      .user-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        min-width: 170px;
+        padding: 6px;
+        display: none;
+        z-index: 30;
+      }
+      .user-dropdown.show {
+        display: block;
+      }
+      .user-dropdown-item {
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 12px;
+        gap: 9px;
+        padding: 9px 10px;
+        border-radius: 7px;
+        font-size: 13px;
         font-weight: 500;
-        color: #b91c1c;
-        background: #fef2f2;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 8px;
+        color: #334155;
         cursor: pointer;
+        transition: background 0.15s;
+      }
+      .user-dropdown-item:hover {
+        background: #f1f5f9;
+      }
+      .user-dropdown-item i {
+        font-size: 15px;
+        color: #64748b;
+      }
+      .user-dropdown-item.danger {
+        color: #b91c1c;
+      }
+      .user-dropdown-item.danger i {
+        color: #b91c1c;
+      }
+
+      /* ===== MODAL UBAH PASSWORD ===== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+        padding: 20px;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal-card {
+        background: #fff;
+        width: 100%;
+        max-width: 340px;
+        border-radius: 16px;
+        padding: 24px 22px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .modal-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a2b3c;
+      }
+      .modal-close {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #94a3b8;
+        background: #f1f5f9;
+        border: none;
+      }
+      .modal-close:hover {
+        background: #e2e8f0;
+      }
+      .modal-msg {
+        margin-top: 10px;
+        font-size: 12.5px;
+        text-align: center;
+        color: #b91c1c;
+        min-height: 16px;
+      }
+      .modal-msg.ok {
+        color: #15803d;
       }
 
       .menutabs {
@@ -427,14 +531,22 @@
     <!-- ===== MAIN APP ===== -->
     <div class="layout" id="layout">
       <div class="topbar">
-        <div class="topbar-user">
+        <div class="topbar-user" id="userMenuToggle">
           <i class="ti ti-user-circle" aria-hidden="true"></i>
           <span id="userLabel">-</span>
+          <i class="ti ti-chevron-down" aria-hidden="true"></i>
+
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-item" id="openChangePass">
+              <i class="ti ti-key" aria-hidden="true"></i>
+              Ubah Password
+            </div>
+            <div class="user-dropdown-item danger" id="btnLogout">
+              <i class="ti ti-logout" aria-hidden="true"></i>
+              Keluar
+            </div>
+          </div>
         </div>
-        <button class="btn-logout" id="btnLogout">
-          <i class="ti ti-logout" aria-hidden="true"></i>
-          Keluar
-        </button>
       </div>
 
       <div class="menutabs" role="tablist">
@@ -481,11 +593,54 @@
       </div>
     </div>
 
+    <!-- ===== MODAL UBAH PASSWORD ===== -->
+    <div class="modal-overlay" id="changePassOverlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">Ubah Password</div>
+          <button class="modal-close" id="closeChangePass">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <form id="changePassForm" autocomplete="off">
+          <div class="field">
+            <label for="oldPassword">Password Lama</label>
+            <div class="field-input">
+              <i class="ti ti-lock" aria-hidden="true"></i>
+              <input type="password" id="oldPassword" placeholder="Password saat ini" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="newPassword">Password Baru</label>
+            <div class="field-input">
+              <i class="ti ti-lock-open" aria-hidden="true"></i>
+              <input type="password" id="newPassword" placeholder="Minimal 4 karakter" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Konfirmasi Password Baru</label>
+            <div class="field-input">
+              <i class="ti ti-lock-open" aria-hidden="true"></i>
+              <input type="password" id="confirmPassword" placeholder="Ulangi password baru" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login" id="btnChangePass">
+            <span class="spinner" id="changePassSpinner"></span>
+            <span id="btnChangePassText">Simpan</span>
+          </button>
+
+          <div class="modal-msg" id="changePassMsg"></div>
+        </form>
+      </div>
+    </div>
+
     <script>
       // ===================================================
       // GANTI dengan URL deployment Apps Script kamu
       // ===================================================
-      const API_URL = "https://script.google.com/macros/s/AKfycbyScJBRqlnk6CcqFtqarh9Jkr26zdn8wVqIAFFXM-gMIqzH-qKgmj_GxhPCtxGU2Xgchg/exec";
+      const API_URL = "https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID_DISINI/exec";
 
       const URLS = {
         pendaftaran: "https://hyegun.github.io/form-daftar/",
@@ -578,6 +733,110 @@
         loginWrap.style.display = "flex";
         loginForm.reset();
         showMsg("", false);
+        closeUserDropdown();
+      });
+
+      // ---------- DROPDOWN USER ----------
+      const userMenuToggle = document.getElementById("userMenuToggle");
+      const userDropdown = document.getElementById("userDropdown");
+
+      function closeUserDropdown() {
+        userDropdown.classList.remove("show");
+        userMenuToggle.classList.remove("open");
+      }
+
+      userMenuToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle("show");
+        userMenuToggle.classList.toggle("open");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userMenuToggle.contains(e.target)) closeUserDropdown();
+      });
+
+      // ---------- MODAL UBAH PASSWORD ----------
+      const changePassOverlay = document.getElementById("changePassOverlay");
+      const changePassForm = document.getElementById("changePassForm");
+      const changePassMsg = document.getElementById("changePassMsg");
+      const btnChangePass = document.getElementById("btnChangePass");
+      const changePassSpinner = document.getElementById("changePassSpinner");
+      const btnChangePassText = document.getElementById("btnChangePassText");
+
+      document.getElementById("openChangePass").addEventListener("click", () => {
+        closeUserDropdown();
+        changePassForm.reset();
+        changePassMsg.textContent = "";
+        changePassMsg.className = "modal-msg";
+        changePassOverlay.classList.add("show");
+      });
+
+      function closeChangePassModal() {
+        changePassOverlay.classList.remove("show");
+      }
+
+      document.getElementById("closeChangePass").addEventListener("click", closeChangePassModal);
+      changePassOverlay.addEventListener("click", (e) => {
+        if (e.target === changePassOverlay) closeChangePassModal();
+      });
+
+      function setChangePassLoading(loading) {
+        btnChangePass.disabled = loading;
+        changePassSpinner.classList.toggle("show", loading);
+        btnChangePassText.textContent = loading ? "Menyimpan..." : "Simpan";
+      }
+
+      function showChangePassMsg(text, ok) {
+        changePassMsg.textContent = text;
+        changePassMsg.className = "modal-msg" + (ok ? " ok" : "");
+      }
+
+      changePassForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userid = sessionStorage.getItem("ckd_userid");
+        const oldPassword = document.getElementById("oldPassword").value.trim();
+        const newPassword = document.getElementById("newPassword").value.trim();
+        const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+          showChangePassMsg("Semua field wajib diisi", false);
+          return;
+        }
+        if (newPassword.length < 4) {
+          showChangePassMsg("Password baru minimal 4 karakter", false);
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showChangePassMsg("Konfirmasi password tidak cocok", false);
+          return;
+        }
+
+        setChangePassLoading(true);
+        showChangePassMsg("", false);
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+              action: "changePassword",
+              userid,
+              oldPassword,
+              newPassword,
+            }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showChangePassMsg("Password berhasil diubah", true);
+            setTimeout(() => closeChangePassModal(), 1000);
+          } else {
+            showChangePassMsg(data.message || "Gagal mengubah password", false);
+          }
+        } catch (err) {
+          showChangePassMsg("Gagal terhubung ke server. Coba lagi.", false);
+        } finally {
+          setChangePassLoading(false);
+        }
       });
 
       // ---------- MENU TAB SWITCHING ----------
