@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
-    <title>Menu Utama — Cek Kesehatan Darah</title>
+    <title>Cek Kesehatan Darah</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
@@ -29,10 +29,190 @@
         overflow: hidden;
       }
 
-      .layout {
+      /* ===== LOGIN SCREEN ===== */
+      .login-wrap {
+        position: fixed;
+        inset: 0;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, #042c53 0%, #0c447c 100%);
+        z-index: 100;
+        padding: 20px;
+      }
+      .login-card {
+        background: #fff;
+        width: 100%;
+        max-width: 360px;
+        border-radius: 18px;
+        padding: 32px 26px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      }
+      .login-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: #042c53;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+      }
+      .login-icon i {
+        font-size: 26px;
+        color: #fff;
+      }
+      .login-title {
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        color: #1a2b3c;
+        margin-bottom: 4px;
+      }
+      .login-sub {
+        text-align: center;
+        font-size: 12.5px;
+        color: #94a3b8;
+        margin-bottom: 22px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+      .field-input {
+        position: relative;
+      }
+      .field-input i {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 16px;
+      }
+      .field-input input {
+        width: 100%;
+        padding: 11px 14px 11px 38px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+        background: #f8fafc;
+      }
+      .field-input input:focus {
+        border-color: #0c447c;
+        background: #fff;
+      }
+      .toggle-pass {
+        cursor: pointer;
+        pointer-events: all !important;
+        right: 13px !important;
+        left: auto !important;
+      }
+      .btn-login {
+        width: 100%;
+        padding: 12px;
+        background: #042c53;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background 0.15s;
+      }
+      .btn-login:hover {
+        background: #0c447c;
+      }
+      .btn-login:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        display: none;
+      }
+      .spinner.show {
+        display: inline-block;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .login-msg {
+        margin-top: 14px;
+        font-size: 12.5px;
+        text-align: center;
+        color: #b91c1c;
+        min-height: 16px;
+      }
+      .login-msg.ok {
+        color: #15803d;
+      }
+
+      /* ===== APP LAYOUT ===== */
+      .layout {
+        display: none;
         flex-direction: column;
         height: 100vh;
+      }
+      .layout.show {
+        display: flex;
+      }
+
+      .topbar {
+        background: #fff;
+        border-bottom: 0.5px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        flex-shrink: 0;
+      }
+      .topbar-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: #475569;
+        font-weight: 500;
+      }
+      .topbar-user i {
+        font-size: 16px;
+        color: #0c447c;
+      }
+      .btn-logout {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #b91c1c;
+        background: #fef2f2;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
       }
 
       .menutabs {
@@ -208,25 +388,63 @@
     </style>
   </head>
   <body>
-    <div class="layout">
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div class="login-wrap" id="loginWrap">
+      <div class="login-card">
+        <div class="login-icon">
+          <i class="ti ti-droplet" aria-hidden="true"></i>
+        </div>
+        <div class="login-title">Cek Kesehatan Darah</div>
+        <div class="login-sub">Masuk untuk melanjutkan</div>
+
+        <form id="loginForm" autocomplete="off">
+          <div class="field">
+            <label for="userid">UserID</label>
+            <div class="field-input">
+              <i class="ti ti-user" aria-hidden="true"></i>
+              <input type="text" id="userid" placeholder="Masukkan UserID" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="field-input">
+              <i class="ti ti-lock" aria-hidden="true"></i>
+              <input type="password" id="password" placeholder="Masukkan Password" required />
+              <i class="ti ti-eye toggle-pass" id="togglePass" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login" id="btnLogin">
+            <span class="spinner" id="loginSpinner"></span>
+            <span id="btnLoginText">Masuk</span>
+          </button>
+
+          <div class="login-msg" id="loginMsg"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== MAIN APP ===== -->
+    <div class="layout" id="layout">
+      <div class="topbar">
+        <div class="topbar-user">
+          <i class="ti ti-user-circle" aria-hidden="true"></i>
+          <span id="userLabel">-</span>
+        </div>
+        <button class="btn-logout" id="btnLogout">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          Keluar
+        </button>
+      </div>
+
       <div class="menutabs" role="tablist">
-        <div
-          class="tab"
-          role="tab"
-          onclick="buka('pendaftaran')"
-          id="tab-pendaftaran"
-        >
+        <div class="tab" role="tab" onclick="buka('pendaftaran')" id="tab-pendaftaran">
           <div class="tab-icon blue">
             <i class="ti ti-clipboard-list" aria-hidden="true"></i>
           </div>
           <span class="tab-label">Pendaftaran</span>
         </div>
-        <div
-          class="tab"
-          role="tab"
-          onclick="buka('registrasi')"
-          id="tab-registrasi"
-        >
+        <div class="tab" role="tab" onclick="buka('registrasi')" id="tab-registrasi">
           <div class="tab-icon green">
             <i class="ti ti-scan" aria-hidden="true"></i>
           </div>
@@ -257,17 +475,18 @@
         </div>
 
         <iframe id="frame-pendaftaran" src="" title="Pendaftaran"></iframe>
-        <iframe
-          id="frame-registrasi"
-          src=""
-          title="Registrasi & Verifikasi"
-        ></iframe>
+        <iframe id="frame-registrasi" src="" title="Registrasi & Verifikasi"></iframe>
         <iframe id="frame-antrian" src="" title="Antrian"></iframe>
         <iframe id="frame-list" src="" title="List Peserta"></iframe>
       </div>
     </div>
 
     <script>
+      // ===================================================
+      // GANTI dengan URL deployment Apps Script kamu
+      // ===================================================
+      const API_URL = "https://script.google.com/macros/s/AKfycbyScJBRqlnk6CcqFtqarh9Jkr26zdn8wVqIAFFXM-gMIqzH-qKgmj_GxhPCtxGU2Xgchg/exec";
+
       const URLS = {
         pendaftaran: "https://hyegun.github.io/form-daftar/",
         registrasi: "https://hyegun.github.io/scaner/",
@@ -277,6 +496,91 @@
 
       let current = null;
 
+      // ---------- LOGIN ----------
+      const loginWrap = document.getElementById("loginWrap");
+      const layout = document.getElementById("layout");
+      const loginForm = document.getElementById("loginForm");
+      const loginMsg = document.getElementById("loginMsg");
+      const btnLogin = document.getElementById("btnLogin");
+      const loginSpinner = document.getElementById("loginSpinner");
+      const btnLoginText = document.getElementById("btnLoginText");
+      const togglePass = document.getElementById("togglePass");
+      const passInput = document.getElementById("password");
+
+      togglePass.addEventListener("click", () => {
+        const isPass = passInput.type === "password";
+        passInput.type = isPass ? "text" : "password";
+        togglePass.className = isPass
+          ? "ti ti-eye-off toggle-pass"
+          : "ti ti-eye toggle-pass";
+      });
+
+      function setLoading(loading) {
+        btnLogin.disabled = loading;
+        loginSpinner.classList.toggle("show", loading);
+        btnLoginText.textContent = loading ? "Memeriksa..." : "Masuk";
+      }
+
+      function showMsg(text, ok) {
+        loginMsg.textContent = text;
+        loginMsg.className = "login-msg" + (ok ? " ok" : "");
+      }
+
+      function showApp(userid) {
+        loginWrap.style.display = "none";
+        layout.classList.add("show");
+        document.getElementById("userLabel").textContent = userid;
+      }
+
+      // Cek sesi yang sudah tersimpan
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = sessionStorage.getItem("ckd_userid");
+        if (saved) showApp(saved);
+      });
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const userid = document.getElementById("userid").value.trim();
+        const password = passInput.value.trim();
+
+        if (!userid || !password) {
+          showMsg("UserID dan Password wajib diisi", false);
+          return;
+        }
+
+        setLoading(true);
+        showMsg("", false);
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "login", userid, password }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            showMsg("Login berhasil", true);
+            sessionStorage.setItem("ckd_userid", data.userid);
+            setTimeout(() => showApp(data.userid), 400);
+          } else {
+            showMsg(data.message || "UserID atau Password salah", false);
+          }
+        } catch (err) {
+          showMsg("Gagal terhubung ke server. Coba lagi.", false);
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      document.getElementById("btnLogout").addEventListener("click", () => {
+        sessionStorage.removeItem("ckd_userid");
+        layout.classList.remove("show");
+        loginWrap.style.display = "flex";
+        loginForm.reset();
+        showMsg("", false);
+      });
+
+      // ---------- MENU TAB SWITCHING ----------
       function buka(key) {
         if (current === key) return;
 
@@ -284,9 +588,7 @@
 
         if (current) {
           document.getElementById("tab-" + current).classList.remove("active");
-          document
-            .getElementById("frame-" + current)
-            .classList.remove("active");
+          document.getElementById("frame-" + current).classList.remove("active");
         }
 
         document.getElementById("tab-" + key).classList.add("active");
